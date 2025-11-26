@@ -1,4 +1,9 @@
 /**
- * Modèle représentant une catégorie de produits (burgers, boissons, desserts...)
- * TODO: Définir l'interface Category
+ * Modèle représentant une catégorie de produits
  */
+export interface Category {
+  id: string;
+  name: string;
+  slug?: string;
+  position: number;
+}
