@@ -119,25 +119,24 @@ export default function MenuScreen() {
         </View>
       </View>
 
-      {/* Footer - Panier */}
-      {itemCount > 0 && (
-        <View style={styles.footer}>
-          <View style={styles.cartInfo}>
-            <View style={styles.cartBadge}>
-              <Text style={styles.cartBadgeText}>{itemCount}</Text>
-            </View>
-            <Text style={styles.cartLabel}>Mon panier</Text>
+      {/* Footer - Panier (toujours visible) */}
+      <View style={styles.footer}>
+        <View style={styles.cartInfo}>
+          <View style={[styles.cartBadge, itemCount === 0 && styles.cartBadgeEmpty]}>
+            <Text style={styles.cartBadgeText}>{itemCount}</Text>
           </View>
-          <Text style={styles.cartTotal}>{total.toFixed(2)} €</Text>
-          <Button
-            title="Voir ma commande"
-            onPress={openCart}
-            icon="cart"
-            iconPosition="left"
-            size="md"
-          />
+          <Text style={styles.cartLabel}>{itemCount === 0 ? 'Panier vide' : 'Mon panier'}</Text>
         </View>
-      )}
+        <Text style={styles.cartTotal}>{total.toFixed(2)} €</Text>
+        <Button
+          title={itemCount === 0 ? 'Panier vide' : 'Voir ma commande'}
+          onPress={openCart}
+          icon="cart"
+          iconPosition="left"
+          size="md"
+          disabled={itemCount === 0}
+        />
+      </View>
     </SafeAreaView>
   );
 }
@@ -182,7 +181,8 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.xl,
   },
   productRow: {
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
+    gap: Spacing.sm,
   },
   loadingContainer: {
     flex: 1,
@@ -240,6 +240,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: Spacing.sm,
+  },
+  cartBadgeEmpty: {
+    backgroundColor: Colors.border,
   },
   cartBadgeText: {
     color: Colors.textLight,

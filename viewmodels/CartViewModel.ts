@@ -96,10 +96,20 @@ export function useCartViewModel(): CartViewModel {
   }, [store]);
 
   const submitOrder = useCallback(async (): Promise<string> => {
-    const order = await createOrder(items, total, store.user?.id);
+    // Convertit les items frontend vers le format attendu par orderService
+    const cartItemsForOrder = items.map((item) => ({
+      ...item,
+      subtotal: item.totalPrice,
+    }));
+    
+    // Crée la commande avec tableNumber par défaut (mode borne)
+    const tableNumber = store.dineMode === 'dine-in' ? 'SUR-PLACE' : 'A-EMPORTER';
+    const order = await createOrder(tableNumber, cartItemsForOrder, store.user?.id);
     store.clearCart();
-    return order.order_number;
-  }, [items, total, store]);
+    
+    // Retourne l'ID de commande (les 8 premiers caractères pour affichage)
+    return order.id.substring(0, 8).toUpperCase();
+  }, [items, store]);
 
   return {
     items,

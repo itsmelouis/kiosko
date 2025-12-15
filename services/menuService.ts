@@ -1,6 +1,6 @@
-import { supabase } from './supabaseClient';
-import { Product } from '../models/Product';
 import { Category } from '../models/Category';
+import { Product } from '../models/Product';
+import { supabase } from './supabaseClient';
 
 /**
  * Service pour gérer le menu (US1 - Parcourir le menu)
@@ -24,6 +24,11 @@ export async function getMenu(): Promise<Product[]> {
     throw error;
   }
 }
+
+/**
+ * Alias pour getMenu - utilisé par le ViewModel
+ */
+export const getProducts = getMenu;
 
 /**
  * Récupère toutes les catégories

@@ -4,8 +4,8 @@
  */
 import { Button } from '@/components/Button';
 import { BorderRadius, Colors, FontSizes, Shadows, Spacing } from '@/constants/theme';
+import { getOptions, getProductById } from '@/services';
 import { selectionFeedback, successFeedback } from '@/services/hapticsService';
-import { getProductById } from '@/services/menuService';
 import { OptionKind, Product, ProductOption, SelectedOptionJson } from '@/types';
 import { useCartViewModel } from '@/viewmodels/CartViewModel';
 import { Ionicons } from '@expo/vector-icons';
@@ -60,19 +60,44 @@ export default function ProductScreen() {
   const loadProduct = useCallback(async () => {
     if (!id) return;
     setLoading(true);
-    const data = await getProductById(id);
-    setProduct(data);
     
-    // Initialise avec les options par défaut
-    if (data?.options) {
-      const defaults = data.options
-        .filter((opt) => opt.is_default)
-        .map((opt) => ({
-          option_id: opt.id,
-          label: opt.label,
-          price_delta: opt.price_delta,
-        }));
-      setSelectedOptions(defaults);
+    try {
+      // Charge le produit et ses options en parallèle
+      const [productData, optionsData] = await Promise.all([
+        getProductById(id),
+        getOptions(id),
+      ]);
+      
+      if (productData) {
+        // Combine le produit avec ses options (adapte les types)
+        const productWithOptions: Product = {
+          id: productData.id,
+          category_id: productData.category_id,
+          name: productData.name,
+          description: productData.description ?? null,
+          base_price: productData.base_price,
+          image_url: productData.image_url ?? null,
+          is_available: productData.is_available,
+          options: optionsData.map((opt) => ({
+            ...opt,
+            kind: opt.kind as OptionKind,
+          })),
+        };
+        
+        setProduct(productWithOptions);
+        
+        // Initialise avec les options par défaut
+        const defaults = optionsData
+          .filter((opt) => opt.is_default)
+          .map((opt) => ({
+            option_id: opt.id,
+            label: opt.label,
+            price_delta: opt.price_delta,
+          }));
+        setSelectedOptions(defaults);
+      }
+    } catch (error) {
+      console.error('Error loading product:', error);
     }
     
     setLoading(false);

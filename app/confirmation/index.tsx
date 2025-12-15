@@ -9,10 +9,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
 import {
-    Animated,
-    StyleSheet,
-    Text,
-    View,
+  Animated,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -154,7 +154,8 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     gap: Spacing.md,
-    maxWidth: 320,
+    width: 320,
+    alignSelf: 'center',
   },
   infoItem: {
     flexDirection: 'row',
@@ -167,7 +168,7 @@ const styles = StyleSheet.create({
   infoText: {
     flex: 1,
     fontSize: FontSizes.md,
-    color: Colors.textSecondary,
+    color: Colors.textPrimary,
     lineHeight: 22,
   },
   footer: {

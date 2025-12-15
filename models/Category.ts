@@ -4,7 +4,7 @@
 export interface Category {
   id: string;
   name: string;
-  slug?: string;
+  slug: string | null;
   position: number;
   icon_name?: string;
 }

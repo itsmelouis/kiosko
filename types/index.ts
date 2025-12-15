@@ -16,8 +16,7 @@ export interface Category {
   name: string;
   slug: string | null;
   position: number;
-  // Frontend only (pour affichage icône)
-  icon?: string;
+  icon_name?: string;
 }
 
 // ============================================

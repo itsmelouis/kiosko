@@ -1,6 +1,6 @@
-import { supabase } from './supabaseClient';
-import { Order, OrderItem } from '../models/Order';
 import { CartItem } from '../models/CartItem';
+import { Order } from '../models/Order';
+import { supabase } from './supabaseClient';
 
 /**
  * Service pour gérer les commandes (US5 - Valider commande)
@@ -40,8 +40,8 @@ export async function createOrder(
       product_id: item.product.id,
       quantity: item.quantity,
       unit_price: item.product.base_price,
-      options: item.selectedOptions.map((opt) => opt.id),
-      line_total: item.subtotal, // Changé de subtotal à line_total
+      options: item.selectedOptions,
+      line_total: item.subtotal,
     }));
 
     const { error: itemsError } = await supabase
