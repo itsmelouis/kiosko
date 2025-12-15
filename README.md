@@ -144,6 +144,19 @@ npm run android
 
 ---
 
+## 🎫 QR Codes de Test (Fidélité)
+
+Pour tester la fonctionnalité de scan QR fidélité, utilisez ces deux comptes de test :
+
+| QR Code | Compte |
+|---------|--------|
+| ![QR Code 1](screenshots/qr-test-1.webp) | **Utilisateur Test 1** |
+| ![QR Code 2](screenshots/qr-test-2.webp) | **Utilisateur Test 2** |
+
+> 💡 Scannez ces QR codes sur l'écran de fidélité pour vous identifier et accumuler des points.
+
+---
+
 ## 🧪 Tests
 
 L'application inclut des tests unitaires pour la logique métier :
