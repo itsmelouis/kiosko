@@ -207,7 +207,7 @@ Deux pipelines GitHub Actions séparés :
 | ![Product](screenshots/product.webp) | Détail produit |
 | ![Cart](screenshots/cart.webp) | Panier |
 | ![Payment](screenshots/payment.webp) | Paiement |
-| ![Confirmation](screenshots/confirmation.png) | Confirmation |
+| ![Confirmation](screenshots/confirmation.webp) | Confirmation |
 
 ---
 
