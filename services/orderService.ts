@@ -1,92 +1,110 @@
+import { supabase } from './supabaseClient';
+import { Order, OrderItem } from '../models/Order';
+import { CartItem } from '../models/CartItem';
+
 /**
- * Service commandes - Frontend uniquement
- * TODO: Remplacer par appels API/Supabase quand backend prêt
+ * Service pour gérer les commandes (US5 - Valider commande)
  */
-import { CartItem, Order, OrderItem } from '@/types';
-
-// Type étendu pour l'affichage (inclut order_number pour le frontend)
-export interface OrderWithNumber extends Order {
-  order_number: string;
-}
-
-// Store temporaire des commandes (frontend only)
-const ordersStore: Order[] = [];
 
 /**
- * Génère un numéro de commande unique (ex: A-042)
- */
-function generateOrderNumber(): string {
-  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const letter = letters[Math.floor(Math.random() * letters.length)];
-  const number = Math.floor(Math.random() * 999) + 1;
-  return `${letter}-${number.toString().padStart(3, '0')}`;
-}
-
-/**
- * Génère un UUID simple
- */
-function generateId(): string {
-  return `order-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-}
-
-/**
- * Convertit les items du panier en items de commande
- */
-function cartItemsToOrderItems(cartItems: CartItem[], orderId: string): OrderItem[] {
-  return cartItems.map((item, index) => ({
-    id: `item-${orderId}-${index}`,
-    order_id: orderId,
-    product_id: item.product.id,
-    quantity: item.quantity,
-    unit_price: item.unitPrice,
-    options: item.selectedOptions,
-    line_total: item.totalPrice,
-  }));
-}
-
-/**
- * Crée une nouvelle commande
- * TODO: Remplacer par appel Supabase
+ * Crée une nouvelle commande avec ses items
  */
 export async function createOrder(
+  tableNumber: string,
   cartItems: CartItem[],
-  total: number,
-  userId?: string | null,
-  tableNumber: string = 'BORNE-1'
-): Promise<OrderWithNumber> {
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  userId?: string
+): Promise<Order> {
+  try {
+    // Calculer le total
+    const totalAmount = cartItems.reduce((sum, item) => sum + item.subtotal, 0);
 
-  const orderId = generateId();
-  const orderNumber = generateOrderNumber();
+    // Créer la commande
+    const { data: order, error: orderError } = await supabase
+      .from('orders')
+      .insert({
+        user_id: userId,
+        table_number: tableNumber,
+        total_amount: totalAmount,
+        status: 'pending',
+        // Retiré payment_status car la colonne n'existe pas
+      })
+      .select()
+      .single();
 
-  const newOrder: Order = {
-    id: orderId,
-    table_number: tableNumber,
-    total_amount: total,
-    status: 'pending',
-    created_at: new Date().toISOString(),
-    user_id: userId || null,
-  };
+    if (orderError) throw orderError;
+    if (!order) throw new Error('Failed to create order');
 
-  // Store pour simulation
-  ordersStore.push(newOrder);
-  
-  console.log(`📦 Mock: Commande ${orderNumber} créée`, {
-    items: cartItemsToOrderItems(cartItems, orderId),
-    total,
-  });
+    // Créer les items de la commande
+    const orderItems = cartItems.map((item) => ({
+      order_id: order.id,
+      product_id: item.product.id,
+      quantity: item.quantity,
+      unit_price: item.product.base_price,
+      options: item.selectedOptions.map((opt) => opt.id),
+      line_total: item.subtotal, // Changé de subtotal à line_total
+    }));
 
-  return { ...newOrder, order_number: orderNumber };
+    const { error: itemsError } = await supabase
+      .from('order_items')
+      .insert(orderItems);
+
+    if (itemsError) throw itemsError;
+
+    return order;
+  } catch (error) {
+    console.error('Error creating order:', error);
+    throw error;
+  }
 }
 
 /**
- * Récupère une commande par son ID
- * TODO: Remplacer par appel Supabase
+ * Récupère une commande par son ID avec ses items
  */
 export async function getOrderById(orderId: string): Promise<Order | null> {
-  await new Promise((resolve) => setTimeout(resolve, 200));
-  return ordersStore.find((o) => o.id === orderId) || null;
+  try {
+    const { data, error } = await supabase
+      .from('orders')
+      .select('*, order_items(*)')
+      .eq('id', orderId)
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error('Error fetching order:', error);
+    throw error;
+  }
 }
 
-// Export du numéro de commande pour le ViewModel
-export { generateOrderNumber };
+/**
+ * Met à jour le statut d'une commande
+ */
+export async function updateOrderStatus(
+  orderId: string,
+  status: Order['status']
+): Promise<void> {
+  try {
+    const { error } = await supabase
+      .from('orders')
+      .update({ status, updated_at: new Date().toISOString() })
+      .eq('id', orderId);
+
+    if (error) throw error;
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    throw error;
+  }
+}
+
+/**
+ * Met à jour le statut de paiement d'une commande
+ * NOTE: payment_status n'existe pas dans le schéma actuel
+ * Cette fonction est désactivée
+ */
+export async function updatePaymentStatus(
+  orderId: string,
+  paymentStatus: string
+): Promise<void> {
+  console.warn('updatePaymentStatus: La colonne payment_status n\'existe pas dans le schéma actuel');
+  // Fonction désactivée car payment_status n'existe pas dans la table orders
+}

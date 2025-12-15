@@ -1,45 +1,64 @@
-/**
- * Service Menu - Frontend uniquement
- * TODO: Remplacer par appels API/Supabase quand backend prêt
- */
-import { Category, Product } from '@/types';
-import { MOCK_CATEGORIES, getProductsWithOptions } from './mockData';
-
-// ============================================
-// FONCTIONS DU SERVICE
-// ============================================
+import { supabase } from './supabaseClient';
+import { Product } from '../models/Product';
+import { Category } from '../models/Category';
 
 /**
- * Récupère toutes les catégories
- * TODO: Remplacer par appel Supabase
+ * Service pour gérer le menu (US1 - Parcourir le menu)
  */
-export async function getCategories(): Promise<Category[]> {
-  // Simule un délai réseau
-  await new Promise((resolve) => setTimeout(resolve, 300));
-  return MOCK_CATEGORIES;
-}
 
 /**
  * Récupère tous les produits disponibles
- * TODO: Remplacer par appel Supabase
  */
-export async function getProducts(): Promise<Product[]> {
-  await new Promise((resolve) => setTimeout(resolve, 300));
-  return getProductsWithOptions().filter((p) => p.is_available);
+export async function getMenu(): Promise<Product[]> {
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('is_available', true)
+      .order('name');
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching menu:', error);
+    throw error;
+  }
 }
 
 /**
- * Récupère les produits d'une catégorie
+ * Récupère toutes les catégories
+ */
+export async function getCategories(): Promise<Category[]> {
+  try {
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .order('position'); // Tri par position
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    throw error;
+  }
+}
+
+/**
+ * Récupère les produits d'une catégorie spécifique
  */
 export async function getProductsByCategory(categoryId: string): Promise<Product[]> {
-  const products = await getProducts();
-  return products.filter((p) => p.category_id === categoryId);
-}
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('category_id', categoryId)
+      .eq('is_available', true)
+      .order('name');
 
-/**
- * Récupère un produit par son ID
- */
-export async function getProductById(productId: string): Promise<Product | null> {
-  const products = await getProducts();
-  return products.find((p) => p.id === productId) || null;
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching products by category:', error);
+    throw error;
+  }
 }
