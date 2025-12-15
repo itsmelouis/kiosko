@@ -2,15 +2,16 @@
  * Export centralisé de tous les services
  */
 
-// Services implémentés (Bloc B2) ✅
+// Client Supabase
 export * from './supabaseClient';
+
+// Services API
 export * from './menuService';
-export * from './productService';
 export * from './orderService';
+export * from './productService';
 export * from './userService';
 
-// Services à implémenter plus tard (Bloc C - Louis)
-// export * from './paymentService';
-// export * from './storageService';
-// export * from './qrService';
-// export * from './hapticsService';
+// Services frontend
+export * from './hapticsService';
+export * from './paymentService';
+

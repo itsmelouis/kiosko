@@ -4,8 +4,7 @@
  */
 import { Button } from '@/components/Button';
 import { BorderRadius, Colors, FontSizes, Spacing } from '@/constants/theme';
-import { errorFeedback, successFeedback } from '@/services/hapticsService';
-import { getUserById } from '@/services/userService';
+import { errorFeedback, getUserByQR, successFeedback } from '@/services';
 import { useCartStore } from '@/stores/cartStore';
 import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
@@ -36,8 +35,8 @@ export default function ScanScreen() {
     setLoading(true);
 
     try {
-      // Récupère l'utilisateur via l'ID scanné
-      const user = await getUserById(data);
+      // Récupère l'utilisateur via le QR code de fidélité
+      const user = await getUserByQR(data);
       
       if (user) {
         successFeedback();

@@ -8,12 +8,12 @@ import { Product } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
-  Dimensions,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Dimensions,
+    Image,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 
 interface ProductCardProps {
@@ -22,10 +22,14 @@ interface ProductCardProps {
 }
 
 const { width } = Dimensions.get('window');
-const CARD_WIDTH = (width - Spacing.lg * 3) / 2;
+const SIDEBAR_WIDTH = 100;
+const MAIN_PADDING = Spacing.md * 2;
+const GAP = Spacing.sm;
+// Calcul: largeur écran - sidebar - padding - gap entre 2 colonnes, divisé par 2
+const CARD_WIDTH = (width - SIDEBAR_WIDTH - MAIN_PADDING - GAP) / 2;
 
 // Placeholder par défaut si pas d'image
-const PLACEHOLDER_IMAGE = 'https://placehold.co/300x200/E0E0E0/666666?text=Image';
+const PLACEHOLDER_IMAGE = 'https://placehold.co/200x250/E0E0E0/666666?text=Image';
 
 export function ProductCard({ product, onPress }: ProductCardProps) {
   const handlePress = () => {
@@ -70,19 +74,19 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.surface,
     borderRadius: BorderRadius.lg,
     overflow: 'hidden',
-    marginBottom: Spacing.md,
-    ...Shadows.md,
+    marginBottom: Spacing.sm,
+    ...Shadows.sm,
   },
   image: {
     width: '100%',
-    height: 120,
+    height: 140,
     backgroundColor: Colors.surfaceVariant,
   },
   content: {
-    padding: Spacing.md,
+    padding: Spacing.sm,
   },
   name: {
-    fontSize: FontSizes.md,
+    fontSize: FontSizes.sm,
     fontWeight: '600',
     color: Colors.textPrimary,
     marginBottom: Spacing.xs,
@@ -90,8 +94,9 @@ const styles = StyleSheet.create({
   description: {
     fontSize: FontSizes.xs,
     color: Colors.textSecondary,
-    marginBottom: Spacing.sm,
-    lineHeight: 16,
+    marginBottom: Spacing.xs,
+    lineHeight: 14,
+    height: 28,
   },
   footer: {
     flexDirection: 'row',
@@ -99,14 +104,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   price: {
-    fontSize: FontSizes.lg,
+    fontSize: FontSizes.md,
     fontWeight: '700',
     color: Colors.primary,
   },
   addButton: {
     backgroundColor: Colors.primary,
-    width: 32,
-    height: 32,
+    width: 28,
+    height: 28,
     borderRadius: BorderRadius.full,
     justifyContent: 'center',
     alignItems: 'center',

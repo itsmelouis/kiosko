@@ -4,8 +4,8 @@
 export interface User {
   id: string;
   loyalty_qr: string;
-  firstname?: string;
-  lastname?: string;
+  firstname: string | null;
+  lastname: string | null;
   points: number;
-  created_at?: string;
+  created_at: string;
 }

@@ -28,7 +28,7 @@ export function CategoryTab({ category, isSelected, onPress }: CategoryTabProps)
       activeOpacity={0.7}
     >
       <Ionicons
-        name={category.icon as keyof typeof Ionicons.glyphMap}
+        name={(category.icon_name || 'restaurant') as keyof typeof Ionicons.glyphMap}
         size={24}
         color={isSelected ? Colors.textLight : Colors.primary}
       />
